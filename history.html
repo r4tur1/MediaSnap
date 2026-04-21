@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - MediaSnap</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-theme="light">
+    <header>
+        <div class="container header-content">
+            <div class="logo-container">
+                <a href="index.html" class="logo">MediaSnap</a>
+                <p class="tagline">Your download history.</p>
+            </div>
+            <div class="header-actions">
+                <button id="clear-history-btn" class="secondary-btn danger">Clear History</button>
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
+                    <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    <svg id="moon-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="history-grid" class="history-grid">
+            <!-- Populated by JS -->
+            <div id="empty-state" class="empty-state">
+                <div class="empty-illustration">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                </div>
+                <p>No downloads yet.</p>
+                <a href="index.html" class="primary-btn">Start Downloading</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="history.html" class="active">History</a>
+            <a href="about.html">About</a>
+        </nav>
+        <p>&copy; 2026 MediaSnap. All rights reserved.</p>
+    </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/history.js"></script>
+    <script>
+        // Inline theme toggle logic for history page
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('mediasnap_theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+        updateThemeIcons(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('mediasnap_theme', newTheme);
+            updateThemeIcons(newTheme);
+        });
+
+        function updateThemeIcons(theme) {
+            if (theme === 'dark') {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+
+        // History page logic
+        const historyGrid = document.getElementById('history-grid');
+        const clearHistoryBtn = document.getElementById('clear-history-btn');
+
+        function renderHistory() {
+            const history = getHistory();
+            if (history.length === 0) {
+                return;
+            }
+
+            historyGrid.innerHTML = '';
+            history.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card history-card';
+                card.innerHTML = `
+                    <div class="history-thumb">
+                        <img src="${item.thumbnail}" alt="${item.title}" onerror="this.src='assets/icons/placeholder.svg'">
+                    </div>
+                    <div class="history-content">
+                        <div class="history-header">
+                            <span class="platform-badge-mini" style="background-color: ${item.platformColor}">${item.platformName}</span>
+                            <span class="history-date">${formatDate(item.timestamp)}</span>
+                        </div>
+                        <h4 class="history-title">${item.title}</h4>
+                        <div class="history-meta">
+                            <span>${item.label} • ${item.ext.toUpperCase()}</span>
+                            <span>${formatFileSize(item.filesize)}</span>
+                        </div>
+                        <div class="history-actions">
+                            <button class="secondary-btn re-download-btn" data-url="${item.url}">Re-download</button>
+                        </div>
+                    </div>
+                `;
+                historyGrid.appendChild(card);
+            });
+
+            // Add event listeners for re-download buttons
+            document.querySelectorAll('.re-download-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const url = e.target.getAttribute('data-url');
+                    localStorage.setItem('mediasnap_pref_url', url);
+                    window.location.href = 'index.html';
+                });
+            });
+        }
+
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear your download history?')) {
+                clearHistory();
+                location.reload();
+            }
+        });
+
+        renderHistory();
+    </script>
+</body>
+</html>

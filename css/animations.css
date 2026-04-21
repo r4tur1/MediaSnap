@@ -1,0 +1,112 @@
+/* Shimmer / Skeleton Animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton .skeleton-thumb,
+.skeleton .skeleton-line,
+.skeleton .skeleton-tabs,
+.skeleton .skeleton-pills {
+    background: linear-gradient(90deg, var(--skeleton-bg) 25%, var(--skeleton-highlight) 50%, var(--skeleton-bg) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 8px;
+}
+
+.skeleton-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+}
+
+@media (min-width: 600px) {
+    .skeleton-thumb {
+        width: 240px;
+    }
+}
+
+.skeleton-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.skeleton-line {
+    height: 16px;
+    width: 100%;
+}
+
+.skeleton-line.title {
+    height: 24px;
+    width: 80%;
+}
+
+.skeleton-line.subtitle {
+    width: 60%;
+}
+
+.skeleton-line.meta {
+    width: 40%;
+}
+
+.skeleton-tabs {
+    height: 30px;
+    width: 120px;
+    margin-top: 10px;
+}
+
+.skeleton-pills {
+    height: 40px;
+    width: 100%;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Slide Up Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease forwards;
+}
