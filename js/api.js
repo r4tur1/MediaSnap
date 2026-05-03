@@ -2,7 +2,7 @@
 // Swap this with your production Render URL when deploying
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
     ? 'http://localhost:8000' 
-    : 'https://mediasnap-backend-svyc.onrender.com';
+    : 'https://mediasnap-backend.onrender.com';
 
 /**
  * Fetches media info from the backend.
